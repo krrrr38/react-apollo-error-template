@@ -17,10 +17,22 @@ import { Layout } from "./layout.jsx";
 import "./index.css";
 
 const ALL_PEOPLE = gql`
+  fragment AllPetData on PetData {
+    ... on DogData {
+      dogData
+    }
+    ... on CatData {
+      catData
+    }
+  }
   query AllPeople {
     people {
       id
       name
+      pet
+      data {
+        ...AllPetData
+      }
     }
   }
 `;
@@ -78,7 +90,7 @@ function App() {
       ) : (
         <ul>
           {data?.people.map((person) => (
-            <li key={person.id}>{person.name}</li>
+            <li key={person.id}>{person.name} / {person.pet} / {JSON.stringify(person.data)}</li>
           ))}
         </ul>
       )}

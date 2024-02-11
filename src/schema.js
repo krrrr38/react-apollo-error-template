@@ -5,20 +5,50 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLList,
-} from 'graphql';
+  GraphQLUnionType,
+} from "graphql";
+
+const DogData = new GraphQLObjectType({
+  name: "DogData",
+  fields: {
+    dogData: { type: GraphQLString },
+  },
+});
+
+const CatData = new GraphQLObjectType({
+  name: "CatData",
+  fields: {
+    catData: { type: GraphQLString },
+  },
+});
+
+const PetData = new GraphQLUnionType({
+  name: "PetData",
+  types: [DogData, CatData],
+  resolveType(value) {
+    if (value.dogData) {
+      return "DogData";
+    }
+    if (value.catData) {
+      return "CatData";
+    }
+  },
+});
 
 const PersonType = new GraphQLObjectType({
   name: 'Person',
   fields: {
     id: { type: GraphQLID },
     name: { type: GraphQLString },
+    pet: { type: GraphQLString },
+    data: { type: PetData },
   },
 });
 
 const peopleData = [
-  { id: 1, name: 'John Smith' },
-  { id: 2, name: 'Sara Smith' },
-  { id: 3, name: 'Budd Deey' },
+  { id: 1, name: "John Smith", pet: "dog", data: { dogData: "dogdogdog" } },
+  { id: 2, name: "Sara Smith", pet: "cat", data: { catData: "catcatcat" } },
+  { id: 3, name: "Budd Deey", pet: "dog", data: { dogData: "dogdogdog" } },
 ];
 
 const QueryType = new GraphQLObjectType({
@@ -43,6 +73,8 @@ const MutationType = new GraphQLObjectType({
         const person = {
           id: peopleData[peopleData.length - 1].id + 1,
           name,
+          kind: "dog",
+          data: { dogData: "dogdogdog" },
         };
 
         peopleData.push(person);
