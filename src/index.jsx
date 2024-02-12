@@ -99,7 +99,11 @@ function App() {
 }
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    possibleTypes: {
+      PetData: ["CatData", "DogData"],
+    }
+  }),
   link,
 });
 
